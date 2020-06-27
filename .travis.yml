@@ -16,14 +16,14 @@ script:
   - docker run -e CI=true mjuriani/react-test npm test -- --coverage
 
 after_success:
-  - docker build -t mjuriani/multi-client -f ./client ./client
-  - docker build -t mjuriani/multi-nginx -f ./nginx ./nginx
-  - docker build -t mjuriani/multi-server -f ./server ./server
-  - docker build -t mjuriani/multi-worker -f ./worker ./worker
+  - docker build -t mjuriani/multi-client:latest -f ./client ./client
+  - docker build -t mjuriani/multi-nginx:latest -f ./nginx ./nginx
+  - docker build -t mjuriani/multi-server:latest -f ./server ./server
+  - docker build -t mjuriani/multi-worker:latest -f ./worker ./worker
   # Log in to the docker CLI
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   # Take the images and push them to docker hub
-  - docker push mjuriani/multi-client
-  - docker push mjuriani/multi-nginx
-  - docker push mjuriani/multi-server
-  - docker push mjuriani/multi-worker
+  - docker push mjuriani/multi-client:latest
+  - docker push mjuriani/multi-nginx:latest
+  - docker push mjuriani/multi-server:latest
+  - docker push mjuriani/multi-worker:latest
