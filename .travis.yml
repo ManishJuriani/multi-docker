@@ -1,0 +1,29 @@
+# requires root permissions
+sudo: required
+# install docker inside container
+services:
+  - docker
+# to be done before running any test or before deployment
+# putting together the initial image
+# using development version of Dockerfile for testing since production
+# dockerfile contains only things essential for production,
+# overwriting default Dockerfile
+before_install:
+  - docker build -t mjuriani/react-test -f ./client/Dockerfile.dev ./client
+
+# to run tests for the initial image
+script:
+  - docker run ec CI=true mjuriani/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t mjuriani/multi-client -f ./client ./client
+  - docker build -t mjuriani/multi-nginx -f ./nginx ./nginx
+  - docker build -t mjuriani/multi-server -f ./server ./server
+  - docker build -t mjuriani/multi-worker -f ./worker ./worker
+  # Log in to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take the images and push them to docker hub
+  - docker push mjuriani/multi-client
+  - docker push mjuriani/multi-nginx
+  - docker push mjuriani/multi-server
+  - docker push mjuriani/multi-worker
